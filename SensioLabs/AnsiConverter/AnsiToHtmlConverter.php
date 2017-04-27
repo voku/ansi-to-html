@@ -18,7 +18,7 @@ use SensioLabs\AnsiConverter\Theme\Theme;
  */
 class AnsiToHtmlConverter
 {
-    /** @var  Theme */
+    /** @var Theme */
     protected $theme;
 
     /** @var string */
