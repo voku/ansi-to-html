@@ -74,7 +74,7 @@ class AnsiToHtmlConverterTest extends \PHPUnit_Framework_TestCase
             array('<span style="background-color: black; color: white; text-decoration: underline">foo</span>', "\e[4mfoo\e[0m"),
 
             // non valid unicode codepoints substitution (only available with PHP >= 5.4)
-            PHP_VERSION_ID < 50400 ?: array('<span style="background-color: black; color: white">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
+            PHP_VERSION_ID < 50400 ? array('', '') : array('<span style="background-color: black; color: white">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
         );
     }
 
@@ -107,7 +107,7 @@ class AnsiToHtmlConverterTest extends \PHPUnit_Framework_TestCase
             array('<span style="background-color: #073642; color: #eee8d5; text-decoration: underline">foo</span>', "\e[4mfoo\e[0m"),
 
             // non valid unicode codepoints substitution (only available with PHP >= 5.4)
-            PHP_VERSION_ID < 50400 ?: array('<span style="background-color: #073642; color: #eee8d5">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
+            PHP_VERSION_ID < 50400 ? array('', '') : array('<span style="background-color: #073642; color: #eee8d5">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
         );
     }
 
@@ -140,7 +140,7 @@ class AnsiToHtmlConverterTest extends \PHPUnit_Framework_TestCase
             array('<span style="background-color: #262626; color: #e4e4e4; text-decoration: underline">foo</span>', "\e[4mfoo\e[0m"),
 
             // non valid unicode codepoints substitution (only available with PHP >= 5.4)
-            PHP_VERSION_ID < 50400 ?: array('<span style="background-color: #262626; color: #e4e4e4">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
+            PHP_VERSION_ID < 50400 ? array('', '') : array('<span style="background-color: #262626; color: #e4e4e4">foo '."\xEF\xBF\xBD".'</span>', "foo \xF4\xFF\xFF\xFF"),
         );
     }
 }
