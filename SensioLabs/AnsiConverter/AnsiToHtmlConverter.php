@@ -18,18 +18,27 @@ use SensioLabs\AnsiConverter\Theme\Theme;
  */
 class AnsiToHtmlConverter
 {
+    /** @var  Theme */
     protected $theme;
+
+    /** @var string */
     protected $charset;
+
+    /** @var bool */
     protected $inlineStyles;
+
+    /** @var string[] */
     protected $inlineColors;
+
+    /** @var string[] */
     protected $colorNames;
 
     public function __construct(Theme $theme = null, $inlineStyles = true, $charset = 'UTF-8')
     {
-        $this->theme = null === $theme ? new Theme() : $theme;
-        $this->inlineStyles = $inlineStyles;
-        $this->charset = $charset;
-        $this->inlineColors = $this->theme->asArray();
+        $this->setTheme($theme);
+        $this->setInlineStyles($inlineStyles);
+        $this->setCharset($charset);
+
         $this->colorNames = array(
             'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
             '', '',
@@ -83,9 +92,24 @@ class AnsiToHtmlConverter
         return $html;
     }
 
-    public function getTheme()
+    protected function tokenize($text)
     {
-        return $this->theme;
+        $tokens = array();
+        preg_match_all("/(?:\e\[(.*?)m|(\x08))/", $text, $matches, PREG_OFFSET_CAPTURE);
+
+        $offset = 0;
+        foreach ($matches[0] as $i => $match) {
+            if ($match[1] - $offset > 0) {
+                $tokens[] = array('text', substr($text, $offset, $match[1] - $offset));
+            }
+            $tokens[] = array("\x08" == $match[0] ? 'backspace' : 'color', $matches[1][$i][0]);
+            $offset = $match[1] + strlen($match[0]);
+        }
+        if ($offset < strlen($text)) {
+            $tokens[] = array('text', substr($text, $offset));
+        }
+
+        return $tokens;
     }
 
     protected function convertAnsiToColor($ansi)
@@ -132,23 +156,52 @@ class AnsiToHtmlConverter
         }
     }
 
-    protected function tokenize($text)
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
-        $tokens = array();
-        preg_match_all("/(?:\e\[(.*?)m|(\x08))/", $text, $matches, PREG_OFFSET_CAPTURE);
+        return $this->theme;
+    }
 
-        $offset = 0;
-        foreach ($matches[0] as $i => $match) {
-            if ($match[1] - $offset > 0) {
-                $tokens[] = array('text', substr($text, $offset, $match[1] - $offset));
-            }
-            $tokens[] = array("\x08" == $match[0] ? 'backspace' : 'color', $matches[1][$i][0]);
-            $offset = $match[1] + strlen($match[0]);
-        }
-        if ($offset < strlen($text)) {
-            $tokens[] = array('text', substr($text, $offset));
-        }
+    /**
+     * @param Theme|null $theme
+     */
+    public function setTheme(Theme $theme = null)
+    {
+        $this->theme = null === $theme ? new Theme() : $theme;
+        $this->inlineColors = $this->theme->asArray();
+    }
 
-        return $tokens;
+    /**
+     * @return bool
+     */
+    public function isInlineStyles()
+    {
+        return $this->inlineStyles;
+    }
+
+    /**
+     * @param bool $inlineStyles
+     */
+    public function setInlineStyles($inlineStyles)
+    {
+        $this->inlineStyles = $inlineStyles;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCharset()
+    {
+        return $this->charset;
+    }
+
+    /**
+     * @param string $charset
+     */
+    public function setCharset($charset)
+    {
+        $this->charset = $charset;
     }
 }
