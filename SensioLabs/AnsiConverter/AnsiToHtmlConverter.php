@@ -18,32 +18,27 @@ use SensioLabs\AnsiConverter\Theme\Theme;
  */
 class AnsiToHtmlConverter
 {
+    /** @var Theme */
     protected $theme;
-    protected $charset;
-    protected $inlineStyles;
-    protected $inlineColors;
-    protected $colorNames;
-    protected $cssPrefix;
 
-    public function __construct(Theme $theme = null, $inlineStyles = true, $charset = 'UTF-8', $cssPrefix = 'ansi_color')
+    /** @var string */
+    protected $charset;
+
+    /** @var bool */
+    protected $inlineStyles;
+
+    /** @var string[] */
+    protected $inlineColors;
+
+    /** @var string[] */
+    protected $colorNames;
+
+    public function __construct(Theme $theme = null, $inlineStyles = true, $charset = 'UTF-8')
     {
-        if (null === $theme) {
-            // If no theme supplied create one and use the default css prefix.
-            $this->theme = new Theme($cssPrefix);
-            $this->cssPrefix = $cssPrefix;
-        } else {
-            // Use the supplied theme and the themes prefix if it is defined.
-            $this->theme = $theme;
-            $this->cssPrefix = $theme->getPrefix();
-            if (null === $this->cssPrefix) {
-                // Set the prefix on the theme and use the prefix locally.
-                $this->theme->setPrefix($cssPrefix);
-                $this->cssPrefix = $cssPrefix;
-            }
-        }
-        $this->inlineStyles = $inlineStyles;
-        $this->charset = $charset;
-        $this->inlineColors = $this->theme->asArray();
+        $this->setTheme($theme);
+        $this->setInlineStyles($inlineStyles);
+        $this->setCharset($charset);
+
         $this->colorNames = array(
             'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
             '', '',
@@ -88,7 +83,7 @@ class AnsiToHtmlConverter
         if ($this->inlineStyles) {
             $html = sprintf('<span style="background-color: %s; color: %s">%s</span>', $this->inlineColors['black'], $this->inlineColors['white'], $html);
         } else {
-            $html = sprintf('<span class="%1$s_bg_black %1$s_fg_white">%2$s</span>', $this->cssPrefix, $html);
+            $html = sprintf('<span class="ansi_color_bg_black ansi_color_fg_white">%s</span>', $html);
         }
 
         // remove empty span
@@ -97,9 +92,24 @@ class AnsiToHtmlConverter
         return $html;
     }
 
-    public function getTheme()
+    protected function tokenize($text)
     {
-        return $this->theme;
+        $tokens = array();
+        preg_match_all('/(?:\e\[(.*?)m|(\x08))/', $text, $matches, PREG_OFFSET_CAPTURE);
+
+        $offset = 0;
+        foreach ($matches[0] as $i => $match) {
+            if ($match[1] - $offset > 0) {
+                $tokens[] = array('text', substr($text, $offset, $match[1] - $offset));
+            }
+            $tokens[] = array("\x08" == $match[0] ? 'backspace' : 'color', $matches[1][$i][0]);
+            $offset = $match[1] + strlen($match[0]);
+        }
+        if ($offset < strlen($text)) {
+            $tokens[] = array('text', substr($text, $offset));
+        }
+
+        return $tokens;
     }
 
     protected function convertAnsiToColor($ansi)
@@ -140,40 +150,58 @@ class AnsiToHtmlConverter
         }
 
         if ($this->inlineStyles) {
-            return sprintf(
-                '</span><span style="background-color: %s; color: %s%s">',
-                $this->inlineColors[$this->colorNames[$bg]],
-                $this->inlineColors[$this->colorNames[$fg]],
-                $as
-            );
+            return sprintf('</span><span style="background-color: %s; color: %s%s">', $this->inlineColors[$this->colorNames[$bg]], $this->inlineColors[$this->colorNames[$fg]], $as);
         } else {
-            return sprintf(
-                '</span><span class="%1$s_bg_%2$s %1$s_fg_%3$s%4$s">',
-                $this->cssPrefix,
-                $this->colorNames[$bg],
-                $this->colorNames[$fg],
-                ($as ? sprintf(' %1$s_underlined', $this->cssPrefix) : '')
-            );
+            return sprintf('</span><span class="ansi_color_bg_%s ansi_color_fg_%s">', $this->colorNames[$bg], $this->colorNames[$fg]);
         }
     }
 
-    protected function tokenize($text)
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
-        $tokens = array();
-        preg_match_all("/(?:\e\[(.*?)m|(\x08))/", $text, $matches, PREG_OFFSET_CAPTURE);
+        return $this->theme;
+    }
 
-        $offset = 0;
-        foreach ($matches[0] as $i => $match) {
-            if ($match[1] - $offset > 0) {
-                $tokens[] = array('text', substr($text, $offset, $match[1] - $offset));
-            }
-            $tokens[] = array("\x08" == $match[0] ? 'backspace' : 'color', $matches[1][$i][0]);
-            $offset = $match[1] + strlen($match[0]);
-        }
-        if ($offset < strlen($text)) {
-            $tokens[] = array('text', substr($text, $offset));
-        }
+    /**
+     * @param Theme|null $theme
+     */
+    public function setTheme(Theme $theme = null)
+    {
+        $this->theme = null === $theme ? new Theme() : $theme;
+        $this->inlineColors = $this->theme->asArray();
+    }
 
-        return $tokens;
+    /**
+     * @return bool
+     */
+    public function isInlineStyles()
+    {
+        return $this->inlineStyles;
+    }
+
+    /**
+     * @param bool $inlineStyles
+     */
+    public function setInlineStyles($inlineStyles)
+    {
+        $this->inlineStyles = $inlineStyles;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCharset()
+    {
+        return $this->charset;
+    }
+
+    /**
+     * @param string $charset
+     */
+    public function setCharset($charset)
+    {
+        $this->charset = $charset;
     }
 }

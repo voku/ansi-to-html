@@ -1,0 +1,7 @@
+# Auto-detect text files, ensure they use LF.
+*       text=auto eol=lf
+
+/.* export-ignore
+/phpunit.xml.dist export-ignore
+/README.md
+/SensioLabs/AnsiConverter/Tests export-ignore
