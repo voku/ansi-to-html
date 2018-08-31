@@ -7,38 +7,38 @@ use voku\AnsiConverter\Theme\Theme;
 /**
  * Converts an ANSI text to HTML5.
  */
-class AnsiToHtmlConverter
+final class AnsiToHtmlConverter
 {
 
   /**
    * @var Theme
    */
-  protected $theme;
+  private $theme;
 
   /**
    * @var string
    */
-  protected $charset;
+  private $charset;
 
   /**
    * @var bool
    */
-  protected $inlineStyles;
+  private $inlineStyles;
 
   /**
    * @var string[]
    */
-  protected $inlineColors;
+  private $inlineColors;
 
   /**
    * @var string[]
    */
-  protected $colorNames;
+  private $colorNames;
 
   /**
    * @var string
    */
-  protected $cssPrefix;
+  private $cssPrefix;
 
   /**
    * @param Theme|null $theme
@@ -74,6 +74,11 @@ class AnsiToHtmlConverter
     ];
   }
 
+  /**
+   * @param $text
+   *
+   * @return string
+   */
   public function convert($text)
   {
     // remove cursor movement sequences
@@ -104,7 +109,9 @@ class AnsiToHtmlConverter
       }
     }
 
+    // init
     $html = '';
+
     foreach ($tokens as $token) {
       if ('text' == $token[0]) {
         $html .= $token[1];
@@ -120,12 +127,12 @@ class AnsiToHtmlConverter
     }
 
     // remove empty span
-    $html = preg_replace('#<span[^>]*></span>#', '', $html);
+    $html = preg_replace('#<span[^>]*></span[^>]*>#', '', $html);
 
-    return $html;
+    return (string)$html;
   }
 
-  protected function tokenize($text)
+  private function tokenize($text)
   {
     // init
     $tokens = [];
@@ -147,7 +154,7 @@ class AnsiToHtmlConverter
     return $tokens;
   }
 
-  protected function convertAnsiToColor($ansi)
+  private function convertAnsiToColor($ansi)
   {
     $bg = 0;
     $fg = 7;
@@ -248,7 +255,7 @@ class AnsiToHtmlConverter
    */
   public function setInlineStyles($inlineStyles)
   {
-    $this->inlineStyles = $inlineStyles;
+    $this->inlineStyles = (bool)$inlineStyles;
   }
 
   /**
