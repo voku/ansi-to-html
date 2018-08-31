@@ -51,10 +51,10 @@ class AnsiToHtmlConverterDefaultThemeWithInlineStylesTest extends \PHPUnit_Frame
       ],
 
       // color
-      ['<span style="background-color: darkred; color: darkred;">foo</span>', "\e[31;41mfoo\e[0m"],
+      ['<span style="background-color: darkred; color: darkred;">iñtërnâtiônàlizætiøn</span>', "\e[31;41miñtërnâtiônàlizætiøn\e[0m"],
 
       // color with [m as a termination (equivalent to [0m])
-      ['<span style="background-color: darkred; color: darkred;">foo</span>', "\e[31;41mfoo\e[m"],
+      ['<span style="background-color: darkred; color: darkred;">👍 💩 😄 ❤ 👍 💩 😄 ❤ 🐶 💩 🐱 🐸 🌀 ❤</span>', "\e[31;41m👍 💩 😄 ❤ 👍 💩 😄 ❤ 🐶 💩 🐱 🐸 🌀 ❤\e[m"],
 
       // bright color
       ['<span style="background-color: red; color: red;">foo</span>', "\e[31;41;1mfoo\e[0m"],

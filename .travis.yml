@@ -17,10 +17,6 @@ matrix:
   - php: hhvm
   - php: nightly
   include:
-  - php: 5.4
-    env: extension='true'
-  - php: 5.4
-    env: extension='false'
   - php: 5.5
     env: extension='true'
   - php: 5.5

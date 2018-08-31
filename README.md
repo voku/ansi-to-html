@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/voku/ansi-to-html.svg?branch=master)](https://travis-ci.com/voku/ansi-to-html)
 [![Coverage Status](https://coveralls.io/repos/github/voku/ansi-to-html/badge.svg?branch=master)](https://coveralls.io/github/voku/ansi-to-html?branch=master)
 
-ANSI to HTML5 Converter
+ANSI to HTML5 Converter for PHP 5.5.x | 7.x
 =======================
 
 *** this is only a fork of "https://github.com/sensiolabs/ansi-to-html" ***
@@ -10,7 +10,7 @@ This small library only does one thing: converting a text containing ANSI
 codes to an HTML5 fragment:
 
 ```php
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use voku\AnsiConverter\AnsiToHtmlConverter;
 
