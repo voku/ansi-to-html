@@ -1,13 +1,15 @@
 ANSI to HTML5 Converter
 =======================
 
+*** this is only a fork of "https://github.com/sensiolabs/ansi-to-html" ***
+
 This small library only does one thing: converting a text containing ANSI
 codes to an HTML5 fragment:
 
 ```php
 require_once __DIR__.'/vendor/autoload.php';
 
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use voku\AnsiConverter\AnsiToHtmlConverter;
 
 $converter = new AnsiToHtmlConverter();
 
@@ -31,7 +33,7 @@ You can then output the HTML5 fragment in any HTML document:
 The converter supports different color themes:
 
 ```php
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
+use voku\AnsiConverter\Theme\SolarizedTheme;
 
 $theme = new SolarizedTheme();
 $converter = new AnsiToHtmlConverter($theme);
@@ -69,43 +71,4 @@ which you can then use in your HTML document:
 ```
 
 You can also override the theme by calling the `setTheme()` method with a new theme.
-
-Twig Integration
-----------------
-
-Register the extension:
-
-```php
-use SensioLabs\AnsiConverter\Bridge\Twig\AnsiExtension;
-
-$twig->addExtension(AnsiExtension());
-```
-
-It's possible to use a custom ``AnsiToHtmlConverter``:
-
-```php
-use SensioLabs\AnsiConverter\Bridge\Twig\AnsiExtension;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
-
-$theme = new SolarizedTheme();
-$converter = new AnsiToHtmlConverter($theme, false);
-
-$twig->addExtension(AnsiExtension($converter));
-```
-
-Then:
-
-```jinja
-<html>
-    <head>
-        <style>
-            {# This is only need if the inline styling is disabled #}
-            {{ ansi_css }}
-        </style>
-    </head>
-    <body>
-        {{ some_ansi_code|ansi_to_html }}
-    </body>
-</html>
-```
 

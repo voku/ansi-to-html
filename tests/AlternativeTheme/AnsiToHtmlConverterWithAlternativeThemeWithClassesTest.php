@@ -1,20 +1,9 @@
 <?php
 
-/*
- * This file is part of ansi-to-html.
- *
- * (c) 2013 Fabien Potencier
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+use voku\AnsiConverter\AnsiToHtmlConverter;
+use voku\AnsiConverter\Theme\SolarizedTheme;
 
-namespace SensioLabs\AnsiConverter\Tests\AlternativeTheme;
-
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
-
-class AnsiToHtmlConverterWithClassesTest extends \PHPUnit_Framework_TestCase
+class AnsiToHtmlConverterWithAlternativeThemeWithClassesTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider getConvertData
@@ -91,7 +80,7 @@ END_CSS;
             array('<span class="ansi_color_bg_black ansi_color_fg_white ansi_color_underlined">foo</span>', $css, "\e[4mfoo\e[0m"),
 
             // non valid unicode codepoints substitution (only available with PHP >= 5.4)
-            PHP_VERSION_ID < 50400 ?: array('<span class="ansi_color_bg_black ansi_color_fg_white">foo '."\xEF\xBF\xBD".'</span>', $css, "foo \xF4\xFF\xFF\xFF"),
+            array('<span class="ansi_color_bg_black ansi_color_fg_white">foo '."\xEF\xBF\xBD".'</span>', $css, "foo \xF4\xFF\xFF\xFF"),
 
             // Yellow on green.
             array('<span class="ansi_color_bg_green ansi_color_fg_yellow">foo</span>', $css, "\e[33;42mfoo\e[0m"),

@@ -1,5 +1,5 @@
 {
-    "name": "sensiolabs/ansi-to-html",
+    "name": "voku/ansi-to-html",
     "type": "library",
     "description": "A library to convert a text with ANSI codes to HTML",
     "license": "MIT",
@@ -7,6 +7,10 @@
         {
             "name": "Fabien Potencier",
             "email": "fabien@symfony.com"
+        },
+        {
+            "name": "Lars Moelleken",
+            "homepage": "http://www.moelleken.org/"
         }
     ],
     "require": {
@@ -15,15 +19,9 @@
     "require-dev": {
         "phpunit/phpunit": "^4"
     },
-    "suggest": {
-        "twig/twig": "Provides nice templating features"
-    },
     "autoload": {
-        "psr-0": { "SensioLabs\\AnsiConverter": "." }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.1-dev"
+        "psr-4": {
+            "voku\\": "src/voku/"
         }
     }
 }

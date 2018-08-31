@@ -1,35 +1,73 @@
-sudo: false
+dist: precise
 
 language: php
 
-php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - hhvm
+sudo: false
 
-env:
-  - COMPOSER_FLAGS=--prefer-lowest
+php:
+- hhvm
+- nightly
+
+os:
+- linux
 
 matrix:
-  exclude:
-    - php: hhvm
-      env: COMPOSER_FLAGS=--prefer-lowest
+  fast_finish: true
+  allow_failures:
+  - php: hhvm
+  - php: nightly
   include:
-    - php: hhvm
-      env: COMPOSER_FLAGS=
-    - php: 7
-      env: PHPSTAN=1
+  - php: 5.3
+    env: extension='true'
+  - php: 5.3
+    env: extension='false'
+  - php: 5.4
+    env: extension='true'
+  - php: 5.4
+    env: extension='false'
+  - php: 5.5
+    env: extension='true'
+  - php: 5.5
+    env: extension='false'
+  - php: 5.6
+    env: extension='true'
+  - php: 5.6
+    env: extension='false'
+  - php: 7.0
+    env: extension='true'
+  - php: 7.0
+    env: extension='false'
+  - php: 7.1
+    env: extension='true'
+  - php: 7.1
+    env: extension='false'
+  - php: 7.2
+    env: extension='true'
+  - php: 7.2
+    env: extension='false'
 
 before_script:
-    - travis_retry composer self-update
-    - travis_retry composer update --no-interaction --prefer-source --prefer-stable ${COMPOSER_FLAGS}
+- php --version
+- mkdir -p $(dirname ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini)
+- touch ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+- echo "php-config -> orig"
+- cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+- if [[ $extension = 'false' ]]; then sed -i.bkp "s/^extension\ =\ mbstring.so$/#extension = mbstring.so/" ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+- if [[ $extension = 'false' ]]; then sed -i.bkp "s/^extension\ =\ intl.so$/#extension = intl.so/" ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+- if [[ $extension = 'false' ]]; then sed -i.bkp "s/^extension\ =\ iconv.so$/#extension = iconv.so/" ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+- echo "php-config -> new"
+- cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+- wget https://scrutinizer-ci.com/ocular.phar
+- travis_retry composer self-update
+- travis_retry composer require satooshi/php-coveralls:1.0.0
+- travis_retry composer install --no-interaction --prefer-source
+- composer dump-autoload -o
 
 script:
-    - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+- mkdir -p build/logs
+- php vendor/bin/phpunit -c phpunit.xml
 
 after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+- php vendor/bin/coveralls -v
+- php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+- bash <(curl -s https://codecov.io/bash)
