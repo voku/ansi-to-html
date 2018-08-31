@@ -26,6 +26,11 @@ final class AnsiToHtmlConverter
   private $inlineStyles;
 
   /**
+   * @var bool
+   */
+  private $invertBackground;
+
+  /**
    * @var string[]
    */
   private $inlineColors;
@@ -51,27 +56,7 @@ final class AnsiToHtmlConverter
     $this->setTheme($theme, $cssPrefix);
     $this->setInlineStyles($inlineStyles);
     $this->setCharset($charset);
-
-    $this->colorNames = [
-        'black',
-        'red',
-        'green',
-        'yellow',
-        'blue',
-        'magenta',
-        'cyan',
-        'white',
-        '',
-        '',
-        'brblack',
-        'brred',
-        'brgreen',
-        'bryellow',
-        'brblue',
-        'brmagenta',
-        'brcyan',
-        'brwhite',
-    ];
+    $this->setColors();
   }
 
   /**
@@ -120,10 +105,18 @@ final class AnsiToHtmlConverter
       }
     }
 
-    if ($this->inlineStyles) {
-      $html = sprintf('<span style="background-color: %s; color: %s;">%s</span>', $this->inlineColors['black'], $this->inlineColors['white'], $html);
+    if ($this->invertBackground) {
+      if ($this->inlineStyles) {
+        $html = sprintf('<span style="background-color: %s; color: %s;">%s</span>', $this->inlineColors['white'], $this->inlineColors['black'], $html);
+      } else {
+        $html = sprintf('<span class="%1$s_bg_white %1$s_fg_black">%2$s</span>', $this->cssPrefix, $html);
+      }
     } else {
-      $html = sprintf('<span class="%1$s_bg_black %1$s_fg_white">%2$s</span>', $this->cssPrefix, $html);
+      if ($this->inlineStyles) {
+        $html = sprintf('<span style="background-color: %s; color: %s;">%s</span>', $this->inlineColors['black'], $this->inlineColors['white'], $html);
+      } else {
+        $html = sprintf('<span class="%1$s_bg_black %1$s_fg_white">%2$s</span>', $this->cssPrefix, $html);
+      }
     }
 
     // remove empty span
@@ -210,6 +203,53 @@ final class AnsiToHtmlConverter
     );
   }
 
+  private function setColors()
+  {
+    if ($this->invertBackground) {
+      $this->colorNames = [
+          'white',
+          'red',
+          'green',
+          'yellow',
+          'blue',
+          'magenta',
+          'cyan',
+          'black',
+          '',
+          '',
+          'brwhite',
+          'brred',
+          'brgreen',
+          'bryellow',
+          'brblue',
+          'brmagenta',
+          'brcyan',
+          'brblack',
+      ];
+    } else {
+      $this->colorNames = [
+          'black',
+          'red',
+          'green',
+          'yellow',
+          'blue',
+          'magenta',
+          'cyan',
+          'white',
+          '',
+          '',
+          'brblack',
+          'brred',
+          'brgreen',
+          'bryellow',
+          'brblue',
+          'brmagenta',
+          'brcyan',
+          'brwhite',
+      ];
+    }
+  }
+
   /**
    * @return Theme
    */
@@ -240,6 +280,24 @@ final class AnsiToHtmlConverter
     }
 
     $this->inlineColors = $this->theme->asArray();
+  }
+
+  /**
+   * @return bool
+   */
+  public function isInvertBackground()
+  {
+    return $this->invertBackground;
+  }
+
+  /**
+   * @param bool $invertBackground
+   */
+  public function setInvertBackground($invertBackground)
+  {
+    $this->invertBackground = (bool)$invertBackground;
+
+    $this->setColors();
   }
 
   /**
