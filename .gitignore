@@ -4,3 +4,4 @@ composer.lock
 
 # php (phpunit)
 build/
+.phpunit.result.cache

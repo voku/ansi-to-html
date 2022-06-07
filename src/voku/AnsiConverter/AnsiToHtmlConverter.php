@@ -23,7 +23,7 @@ final class AnsiToHtmlConverter
   /**
    * @var bool
    */
-  private $inlineStyles;
+  private $inlineStyles = false;
 
   /**
    * @var bool
@@ -51,7 +51,12 @@ final class AnsiToHtmlConverter
    * @param string     $charset
    * @param string     $cssPrefix
    */
-  public function __construct(Theme $theme = null, $inlineStyles = true, $charset = 'UTF-8', $cssPrefix = 'ansi_color')
+  public function __construct(
+      Theme $theme = null,
+      bool $inlineStyles = true,
+      string $charset = 'UTF-8',
+      string $cssPrefix = 'ansi_color'
+  )
   {
     $this->setTheme($theme, $cssPrefix);
     $this->setInlineStyles($inlineStyles);
@@ -67,12 +72,12 @@ final class AnsiToHtmlConverter
   public function convert($text)
   {
     // remove cursor movement sequences
-    $text = preg_replace("#\e\[(?:K|s|u|2J|2K|\d+(?:[ABCDEFGJKST])|\d+;\d+(?:[Hf]))#", '', $text);
+    $text = preg_replace("#\e\[(?:K|s|u|2J|2K|\d+[ABCDEFGJKST]|\d+;\d+[Hf])#", '', $text);
     $text = htmlspecialchars($text, ENT_COMPAT | ENT_SUBSTITUTE, $this->charset);
 
     // carriage return
     $text = str_replace("\r\n", "\n", $text);
-    $text = preg_replace("#^(?:.*\r)#s", '', $text);
+    $text = preg_replace("#^.*\r#s", '', $text);
 
     $tokens = $this->tokenize($text);
 
@@ -84,7 +89,7 @@ final class AnsiToHtmlConverter
           if (
               'text' == $tokens[$j][0]
               &&
-              strlen($tokens[$j][1]) > 0
+              $tokens[$j][1] != ''
           ) {
             $tokens[$j][1] = substr($tokens[$j][1], 0, -1);
 
@@ -130,7 +135,7 @@ final class AnsiToHtmlConverter
     // init
     $tokens = [];
 
-    preg_match_all("/(?:\e\[(.*?)m|(\x08))/", $text, $matches, PREG_OFFSET_CAPTURE);
+    preg_match_all("/\e\[(.*?)m|()/", $text, $matches, PREG_OFFSET_CAPTURE);
 
     $offset = 0;
     foreach ($matches[0] as $i => $match) {
@@ -285,7 +290,7 @@ final class AnsiToHtmlConverter
   /**
    * @return bool
    */
-  public function isInvertBackground()
+  public function isInvertBackground(): bool
   {
     return $this->invertBackground;
   }
@@ -293,9 +298,9 @@ final class AnsiToHtmlConverter
   /**
    * @param bool $invertBackground
    */
-  public function setInvertBackground($invertBackground)
+  public function setInvertBackground(bool $invertBackground)
   {
-    $this->invertBackground = (bool)$invertBackground;
+    $this->invertBackground = $invertBackground;
 
     $this->setColors();
   }
@@ -303,7 +308,7 @@ final class AnsiToHtmlConverter
   /**
    * @return bool
    */
-  public function isInlineStyles()
+  public function isInlineStyles(): bool
   {
     return $this->inlineStyles;
   }
@@ -311,9 +316,9 @@ final class AnsiToHtmlConverter
   /**
    * @param bool $inlineStyles
    */
-  public function setInlineStyles($inlineStyles)
+  public function setInlineStyles(bool $inlineStyles)
   {
-    $this->inlineStyles = (bool)$inlineStyles;
+    $this->inlineStyles = $inlineStyles;
   }
 
   /**
@@ -327,7 +332,7 @@ final class AnsiToHtmlConverter
   /**
    * @param string $charset
    */
-  public function setCharset($charset)
+  public function setCharset(string $charset)
   {
     $this->charset = $charset;
   }

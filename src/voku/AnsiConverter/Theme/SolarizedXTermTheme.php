@@ -9,6 +9,9 @@ namespace voku\AnsiConverter\Theme;
  */
 class SolarizedXTermTheme extends Theme
 {
+  /**
+   * @return array<string, string>
+   */
   public function asArray()
   {
     return [

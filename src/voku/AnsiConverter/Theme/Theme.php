@@ -19,16 +19,22 @@ class Theme
 
   public function asCss()
   {
+    // init
     $css = [];
+
     foreach ($this->asArray() as $name => $color) {
       $css[] = sprintf('.%s_fg_%s { color: %s }', $this->prefix, $name, $color);
       $css[] = sprintf('.%s_bg_%s { background-color: %s }', $this->prefix, $name, $color);
     }
+
     $css[] = sprintf('.%s_underlined { text-decoration: underlined }', $this->prefix);
 
     return implode("\n", $css);
   }
 
+  /**
+   * @return array<string, string>
+   */
   public function asArray()
   {
     return [

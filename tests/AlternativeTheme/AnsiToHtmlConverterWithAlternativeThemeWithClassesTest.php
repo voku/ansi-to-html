@@ -3,7 +3,7 @@
 use voku\AnsiConverter\AnsiToHtmlConverter;
 use voku\AnsiConverter\Theme\SolarizedTheme;
 
-class AnsiToHtmlConverterWithAlternativeThemeWithClassesTest extends \PHPUnit_Framework_TestCase
+class AnsiToHtmlConverterWithAlternativeThemeWithClassesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getConvertData

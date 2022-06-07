@@ -2,7 +2,7 @@
 
 use voku\AnsiConverter\AnsiToHtmlConverter;
 
-class AnsiToHtmlConverterDefaultThemeWithAlternativeCSSPrefixTest extends \PHPUnit_Framework_TestCase
+class AnsiToHtmlConverterDefaultThemeWithAlternativeCSSPrefixTest extends \PHPUnit\Framework\TestCase
 {
   /**
    * @dataProvider getConvertData
