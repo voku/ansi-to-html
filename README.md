@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/voku/ansi-to-html.svg?branch=master)](https://travis-ci.com/voku/ansi-to-html)
 [![Coverage Status](https://coveralls.io/repos/github/voku/ansi-to-html/badge.svg?branch=master)](https://coveralls.io/github/voku/ansi-to-html?branch=master)
 
-ANSI to HTML5 Converter for PHP 5.5.x | 7.x
+ANSI to HTML5 Converter for PHP
 =======================
 
 *** this is only a fork of "https://github.com/sensiolabs/ansi-to-html" ***
